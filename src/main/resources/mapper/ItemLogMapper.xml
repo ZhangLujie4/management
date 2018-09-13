@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pxt.management.web.mapper.ItemLogMapper">
+
+
+    <resultMap id="selectMap" type="com.pxt.management.web.dto.SelectDTO">
+        <result column="account" property="account"/>
+        <result column="platform" property="platform"/>
+        <result column="trade" property="trade"/>
+        <result column="time" property="time"/>
+    </resultMap>
+
+    <resultMap id="itemLogMap" type="com.pxt.management.web.dataobject.ItemLogDO">
+        <result column="data_id" property="dataId"/>
+        <result column="id" property="id"/>
+        <result column="trade" property="trade"/>
+        <result column="time" property="time"/>
+        <result column="platform" property="platform"/>
+        <result column="account" property="account"/>
+        <result column="average" property="average"/>
+        <result column="calculate" property="calculate"/>
+    </resultMap>
+
+    <select id="selectItemLogList" resultMap="selectMap">
+        select
+        account,
+        platform
+        from item_log
+        where trade = #{trade}
+        group by account, platform
+    </select>
+
+    <select id="findLastLogList" resultMap="itemLogMap">
+        select *
+        FROM item_log a
+        where
+        a.trade = #{trade}
+        and 1 > (select count(*)
+        from item_log b
+        where a.trade = b.trade and a.account = b.account and a.platform = b.platform and b.time > a.time)
+        order by a.platform asc
+    </select>
+
+    <select id="find48Log" resultMap="itemLogMap">
+        select *
+        from item_log
+        where trade = #{trade} and account = #{account} and platform = #{platform}
+        order by `time` desc
+        limit 48
+    </select>
+</mapper>
